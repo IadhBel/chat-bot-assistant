@@ -1,0 +1,39 @@
+# Cloud Run. ADC authenticates Vertex. Retrieval is Vertex RAG Engine — no Cloud SQL.
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+  sql:
+    init:
+      mode: never
+
+acme:
+  security:
+    enabled: ${SECURITY_ENABLED:true}
+    api-token: ${API_TOKEN}
+  llm:
+    provider: vertex
+  rag:
+    backend: vertex
+    store: memory
+    ingest-on-startup: false
+    sync:
+      enabled: false
+    engine:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      corpus: ${RAG_CORPUS:}
+      gcs-bucket: ${GCS_BUCKET:}
+      gcs-prefix: ${GCS_PREFIX:knowledge/}
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    com.acme.assistant: INFO
+    root: WARN

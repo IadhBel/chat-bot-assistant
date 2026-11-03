@@ -1,0 +1,48 @@
+spring:
+  profiles:
+    active: test
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.JdbcClientAutoConfiguration
+      - org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
+  sql:
+    init:
+      mode: never
+
+acme:
+  security:
+    enabled: false
+  llm:
+    provider: stub
+    vertex:
+      project: test
+      location: europe-west1
+      flash-model: stub-flash
+      pro-model: stub-pro
+      temperature: 0.1
+      max-output-tokens: 256
+      max-retries: 1
+      log-requests: false
+  rag:
+    backend: local
+    store: memory
+    table: knowledge_embeddings
+    dimension: 32
+    max-results: 3
+    min-score: 0.0
+    ingest-on-startup: false
+    chunk-size: 400
+    chunk-overlap: 40
+    multimodal: true
+    sync:
+      enabled: false
+      interval: PT1H
+      delete-missing: false
+    vertex:
+      project: test
+      location: europe-west1
+      model: hash
+      max-retries: 1
+  memory:
+    max-messages: 8

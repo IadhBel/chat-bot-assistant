@@ -1,0 +1,65 @@
+# Local stack: PostgreSQL for chat's offline RAG, plus chat + MCP stubs.
+#
+#   docker compose up --build
+#
+# Chat profile `local`: stub LLMs (no GCP bill) and in-process RAG over the
+# bundled corpus. MCP profile `local`: in-memory Vertex RAG port.
+# The indexer is a job, not a service:
+#   docker compose run --rm indexer
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: acme_assistant
+      POSTGRES_USER: acme
+      POSTGRES_PASSWORD: acme
+    ports:
+      - "5432:5432"
+    volumes:
+      - acme-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acme -d acme_assistant"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  assistant:
+    build:
+      context: .
+      dockerfile: chat/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/acme_assistant
+      DB_USERNAME: acme
+      DB_PASSWORD: acme
+      ACME_LLM_PROVIDER: ${ACME_LLM_PROVIDER:-stub}
+      GCP_PROJECT: ${GCP_PROJECT:-}
+      GCP_LOCATION: ${GCP_LOCATION:-europe-west1}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  mcp:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      PORT: 8081
+
+  indexer:
+    build:
+      context: .
+      dockerfile: indexer/Dockerfile
+    profiles: ["job"]
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      ACME_INDEXER_PROVIDER: stub
+
+volumes:
+  acme-pgdata:

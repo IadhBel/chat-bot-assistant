@@ -1,0 +1,19 @@
+# Offline / laptop profile. No Vertex calls unless ACME_LLM_PROVIDER=vertex.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/acme_assistant}
+    username: ${DB_USERNAME:acme}
+    password: ${DB_PASSWORD:acme}
+
+acme:
+  security:
+    enabled: false
+  llm:
+    provider: ${ACME_LLM_PROVIDER:stub}
+  rag:
+    store: ${RAG_STORE:pgvector}
+    ingest-on-startup: true
+
+logging:
+  level:
+    com.acme.assistant: DEBUG

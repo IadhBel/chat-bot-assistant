@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: acme-assistant-indexer
+  main:
+    web-application-type: none
+    banner-mode: "off"
+  threads:
+    virtual:
+      enabled: true
+
+acme:
+  indexer:
+    provider: ${ACME_INDEXER_PROVIDER:vertex}
+    corpus-path: ${CORPUS_PATH:}
+    upload-classpath-seed: ${UPLOAD_CLASSPATH_SEED:true}
+    engine:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      corpus: ${RAG_CORPUS:}
+      gcs-bucket: ${GCS_BUCKET:}
+      gcs-prefix: ${GCS_PREFIX:knowledge/}
+      generation-object: ${RAG_GENERATION_OBJECT:meta/corpus-generation}
+      layout-parser-processor: ${DOCUMENT_AI_PROCESSOR:}
+      chunk-size: ${RAG_CHUNK_SIZE:512}
+      chunk-overlap: ${RAG_CHUNK_OVERLAP:100}
+
+logging:
+  level:
+    com.acme.assistant: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} - %msg%n"

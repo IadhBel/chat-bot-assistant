@@ -1,0 +1,12 @@
+server:
+  port: ${PORT:8081}
+
+acme:
+  mcp:
+    provider: stub
+    security:
+      enabled: false
+
+logging:
+  level:
+    com.acme.assistant: DEBUG

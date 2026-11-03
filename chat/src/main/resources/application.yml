@@ -1,0 +1,121 @@
+spring:
+  application:
+    name: acme-assistant
+  profiles:
+    default: local
+  threads:
+    virtual:
+      enabled: true
+  jackson:
+    default-property-inclusion: non_null
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/acme_assistant}
+    username: ${DB_USERNAME:acme}
+    password: ${DB_PASSWORD:acme}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:8}
+      connection-timeout: 10s
+  flyway:
+    enabled: true
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  tracing:
+    sampling:
+      probability: 1.0
+
+acme:
+  security:
+    enabled: ${SECURITY_ENABLED:false}
+    api-token: ${API_TOKEN:}
+  llm:
+    provider: ${ACME_LLM_PROVIDER:vertex}
+    vertex:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      flash-model: ${FLASH_MODEL:gemini-2.5-flash}
+      pro-model: ${PRO_MODEL:gemini-2.5-pro}
+      temperature: 0.3
+      max-output-tokens: 2048
+      max-retries: 2
+      log-requests: false
+  rag:
+    backend: ${RAG_BACKEND:local}
+    store: ${RAG_STORE:pgvector}
+    table: knowledge_embeddings
+    dimension: ${EMBEDDING_DIMENSION:768}
+    max-results: 5
+    min-score: 0.4
+    ingest-on-startup: true
+    chunk-size: 700
+    chunk-overlap: 90
+    multimodal: true
+    sync:
+      enabled: true
+      interval: PT15M
+      delete-missing: false
+    sources:
+      - id: classpath-kb
+        type: classpath
+        enabled: true
+        prefix: knowledge/
+        glob: "**/*"
+      - id: gcs-manuals
+        type: gcs
+        enabled: ${GCS_ENABLED:false}
+        project: ${GCP_PROJECT:}
+        bucket: ${GCS_BUCKET:}
+        prefix: ${GCS_PREFIX:knowledge/}
+        glob: "**/*"
+      - id: s3-fleet
+        type: s3
+        enabled: ${S3_ENABLED:false}
+        bucket: ${S3_BUCKET:}
+        prefix: ${S3_PREFIX:knowledge/}
+        region: ${S3_REGION:eu-west-1}
+        glob: "**/*"
+      - id: azure-sav
+        type: azure
+        enabled: ${AZURE_ENABLED:false}
+        container: ${AZURE_CONTAINER:}
+        prefix: ${AZURE_PREFIX:knowledge/}
+        connection-string: ${AZURE_BLOB_CONNECTION:}
+        glob: "**/*"
+      - id: local-drop
+        type: filesystem
+        enabled: ${FS_SOURCE_ENABLED:false}
+        path: ${FS_SOURCE_PATH:./knowledge-drop}
+        glob: "**/*"
+    vertex:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      model: ${EMBEDDING_MODEL:text-embedding-004}
+      max-retries: 3
+    engine:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      corpus: ${RAG_CORPUS:}
+      gcs-bucket: ${GCS_BUCKET:}
+      gcs-prefix: ${GCS_PREFIX:knowledge/}
+      generation-object: ${RAG_GENERATION_OBJECT:meta/corpus-generation}
+      layout-parser-processor: ${DOCUMENT_AI_PROCESSOR:}
+  memory:
+    max-messages: 16
+
+logging:
+  level:
+    com.acme.assistant: INFO
+    dev.langchain4j: WARN
+    org.bsc.langgraph4j: INFO

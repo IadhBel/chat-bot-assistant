@@ -1,0 +1,10 @@
+acme:
+  mcp:
+    provider: vertex
+    security:
+      enabled: ${SECURITY_ENABLED:true}
+
+logging:
+  level:
+    com.acme.assistant: INFO
+    root: WARN

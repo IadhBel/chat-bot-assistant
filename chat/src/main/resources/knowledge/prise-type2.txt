@@ -1,0 +1,7 @@
+# Notice d'utilisation — prise Type 2
+
+La Mégane E-Tech et la Acme 5 E-Tech se rechargent en AC via une prise Type 2.
+
+- Brancher le câble Mode 3 fourni sur une borne 7-22 kW.
+- Le voyant de charge clignote pendant la session, fixe une fois le palier atteint.
+- Un fichier PDF ou une photo du tableau de bord peut être déposée dans le bucket GCS `knowledge/` pour enrichir le RAG.

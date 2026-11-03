@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: acme-assistant-mcp
+  threads:
+    virtual:
+      enabled: true
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: acme-knowledge
+        version: 0.1.0
+        type: SYNC
+        protocol: STREAMABLE
+        instructions: >
+          Acme product and after-sales knowledge over Vertex RAG Engine.
+          Call list_sources to confirm the corpus generation, then
+          search_knowledge for facts. Snippets are truncated on purpose.
+        capabilities:
+          tool: true
+          resource: false
+          prompt: false
+          completion: false
+        streamable-http:
+          mcp-endpoint: /mcp
+          keep-alive-interval: 30s
+
+server:
+  port: ${PORT:8081}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+acme:
+  mcp:
+    provider: ${ACME_MCP_PROVIDER:vertex}
+    default-limit: 8
+    max-limit: 20
+    snippet-chars: 1200
+    security:
+      enabled: ${SECURITY_ENABLED:true}
+      read-token: ${MCP_READ_TOKEN:}
+    engine:
+      project: ${GCP_PROJECT:}
+      location: ${GCP_LOCATION:europe-west1}
+      corpus: ${RAG_CORPUS:}
+      gcs-bucket: ${GCS_BUCKET:}
+      gcs-prefix: ${GCS_PREFIX:knowledge/}
+      generation-object: ${RAG_GENERATION_OBJECT:meta/corpus-generation}
+
+logging:
+  level:
+    com.acme.assistant: INFO

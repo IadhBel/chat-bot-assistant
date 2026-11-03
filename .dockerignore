@@ -1,0 +1,9 @@
+.git
+.idea
+.vscode
+**/target
+*.iml
+.env
+docs
+README.md
+compose.yaml

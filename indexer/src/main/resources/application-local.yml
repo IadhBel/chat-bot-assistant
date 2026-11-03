@@ -1,0 +1,8 @@
+acme:
+  indexer:
+    provider: stub
+    upload-classpath-seed: false
+
+logging:
+  level:
+    com.acme.assistant: DEBUG
